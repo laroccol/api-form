@@ -1,6 +1,6 @@
 {
   "name": "@laroccol/api-form",
-  "version": "0.1.2",
+  "version": "0.1.7",
   "description": "A React Form Library With API Support",
   "scripts": {
     "rollup": "rollup -c",

@@ -11,11 +11,13 @@ import {
  * Set default values if any exist otherwise set to respective empty value (string | number: "", boolean: false)
  * @param formLayout - The layout of the form.
  * @param defaultData - The default data for the form (If the form corresponds to a piece of data that is to be edited).
+ * @param idKey - The key of the id field (if it exists).
  * @returns The default data for the form.
  */
 const generateDefaultFormData = (
   formLayout: FormLayout,
-  defaultData?: FormData | null
+  defaultData?: FormData | null,
+  idKey?: string
 ): FormData => {
   const formData: FormData = defaultData || {};
 
@@ -34,6 +36,10 @@ const generateDefaultFormData = (
     }
     formData[id] = defaultValue;
   });
+
+  if (idKey && defaultData && defaultData[idKey]) {
+    formData[idKey] = defaultData[idKey]; // If the form is for editing a piece of data then set the id field to the id of the data (if it exists)
+  }
 
   return formData;
 };
@@ -91,12 +97,10 @@ const checkData = (data: FormData, formLayout: FormLayout): FormErrors => {
  * @returns The form data with numbers parsed.
  */
 const parseNumbers = (data: FormData, formLayout: FormLayout): FormData => {
-  const parsedData: FormData = {};
+  const parsedData: FormData = { ...data };
   formLayout.map(({ id, inputType }) => {
     if (inputType === InputType.NUMBER) {
       parsedData[id] = Number(data[id]);
-    } else {
-      parsedData[id] = data[id];
     }
   });
   return parsedData;
@@ -179,15 +183,17 @@ export interface FormControlState {
  * @param formLayout - REQUIRED - The layout of the form.
  * @param onSubmit - The function to call when the form is submitted.
  * @param defaultData - The default data for the form.
+ * @param idKey - The key of the id field in the form data. (used for editing data)
  * @returns The form state and dispatch functions.
  */
 export function useFormControl(
   formLayout: FormLayout,
   onSubmit: (data: FormData) => any | Promise<any>,
-  defaultData?: FormData
+  defaultData?: FormData,
+  idKey?: string
 ) {
   const [formState, formDispatch] = useReducer(reducer, {
-    formData: generateDefaultFormData(formLayout, defaultData),
+    formData: generateDefaultFormData(formLayout, defaultData, idKey),
     formErrors: {},
   });
 

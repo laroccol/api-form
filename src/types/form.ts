@@ -40,7 +40,7 @@ export interface HideCondition {
  */
 export interface Option {
   display: string;
-  value: string;
+  value: string | number;
 }
 
 /**

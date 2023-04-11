@@ -14,6 +14,7 @@ import CheckBox from "../inputs/CheckBox";
 import Dropdown from "../inputs/Dropdown";
 import RadioButtons from "../inputs/RadioButtons";
 import NumberInput from "../inputs/NumberInput";
+import { useFormContext } from "../../context/FormProvider";
 
 /**
  * Default input components for each input type
@@ -73,6 +74,8 @@ export default function Form({
   onSubmit,
   onChangeField,
 }: FormProps) {
+  const { inputComponents: inputComponentsConfig } = useFormContext();
+
   return (
     <form style={styles.gridContainer}>
       {formLayout.map(
@@ -106,8 +109,9 @@ export default function Form({
 
           const label = displayValue ?? id;
           const InputComponent =
-            inputComponents?.[inputType as InputType] ??
-            DEAFULT_INPUT_COMPONENTS[inputType as InputType]; // Use custom input component if provided, otherwise use default
+            inputComponents?.[inputType as InputType] ?? // Use custom input from props if provided
+            inputComponentsConfig?.[inputType as InputType] ?? // Otherwise use custom input from context
+            DEAFULT_INPUT_COMPONENTS[inputType as InputType]; // Else use default component
 
           let display = null;
           if (InputComponent) {
